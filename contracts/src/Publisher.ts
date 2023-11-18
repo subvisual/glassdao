@@ -4,11 +4,8 @@ import {
   state,
   State,
   method,
-  PrivateKey,
   PublicKey,
   Encoding,
-  Bool,
-  Reducer,
 } from 'o1js';
 
 export { Field, Encoding };
@@ -30,31 +27,21 @@ export class Publisher extends SmartContract {
     this.root.set(Field(0));
   }
 
-  @method publishMessage(message: Field, sig: Field) {
-    // Get the oracle public key from the contract state
-    /* const oraclePublicKey = this.oraclePublicKey.get();
-    this.oraclePublicKey.assertEquals(oraclePublicKey); */
+  @method publishMessage(message: Field, calculatedRoot: Field) {
+    this.root.getAndAssertEquals();
+    this.message.getAndAssertEquals();
 
-    // Get data from oracle
-    const addresses = [
-      '226737914325023845218636111057251780156036265551267936159326931770235510744',
-      '16800499555793692526894213099480938382511091338422244196866733508727794867668'
-    ];
-    const list = addresses.map((addr) => Field(addr));
-
-    // Assert that signer in list
-    const isAllowed = list.reduce(
-      (memo, value) => memo.or(value.equals(sig)),
-      Bool(false)
-    );
-    isAllowed.assertTrue();
-
-    // Update on-chain message state
+    this.root.assertEquals(calculatedRoot);
     this.message.set(message);
   }
 
   @method setRoot(newRoot: Field) {
     this.root.getAndAssertEquals();
     this.root.set(newRoot);
+  }
+
+  @method setOraclePublicKey(oraclePubKey: PublicKey) {
+    this.oraclePublicKey.getAndAssertEquals();
+    this.oraclePublicKey.set(oraclePubKey);
   }
 }
