@@ -44,7 +44,7 @@ export default function DAOSetup() {
     const bio = data.get("bio")?.toString() || "";
 
     // createDAO({ name, sector, creationDate, bio });
-    router.push(address!);
+    address && router.push(address);
   };
 
   return (
