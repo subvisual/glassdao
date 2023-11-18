@@ -21,6 +21,7 @@ type Props = {
   margin?: string;
   padding?: string;
   width?: string;
+  style?: Record<string, string>;
 };
 
 function Flex({ children, ...props }: Props) {

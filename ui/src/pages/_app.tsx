@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
-import { goerli, mainnet } from "wagmi/chains";
+import { mainnet, sepolia } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { useIsMounted } from "@/hooks/useIsMounted";
 import { ThorinGlobalStyles, lightTheme } from "@ensdomains/thorin";
@@ -11,7 +11,7 @@ import Header from "@/components/Header";
 import Layout from "@/components/AppLayout";
 
 const { publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, goerli],
+  [mainnet, sepolia],
   [publicProvider()]
 );
 
