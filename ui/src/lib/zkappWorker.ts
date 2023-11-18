@@ -1,4 +1,4 @@
-import { Mina, PublicKey, fetchAccount } from "o1js";
+import { Field, Mina, PublicKey, fetchAccount } from "o1js";
 
 type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 
@@ -43,15 +43,17 @@ const functions = {
     const currentNum = await state.zkapp!.message.get();
     return JSON.stringify(currentNum.toJSON());
   },
-  createUpdateTransaction: async (args: {}) => {
-    /* const transaction = await Mina.transaction(() => {
-      state.zkapp!.publishMessage(Field('45646'))
+  publishMessage: async (args: { sig: string }) => {
+    const transaction = await Mina.transaction(() => {
+      state.zkapp!.publishMessage(Field("45646"), Field(args.sig));
     });
-    state.transaction = transaction; */
-    console.log("publish");
+    state.transaction = transaction;
   },
-  proveUpdateTransaction: async (args: {}) => {
+  provePublishTransaction: async (args: {}) => {
     await state.transaction!.prove();
+  },
+  sendPublishTransaction: async (args: {}) => {
+    await state.transaction!.sign();
   },
   getTransactionJSON: async (args: {}) => {
     return state.transaction!.toJSON();
