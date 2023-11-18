@@ -49,7 +49,11 @@ export default class ZkappWorkerClient {
     });
   }
 
-  setRoot(root: Field) {
+  getRoot() {
+    return this._call("getRoot", {});
+  }
+
+  setRoot(root: string) {
     return this._call("setRoot", {
       root,
     });

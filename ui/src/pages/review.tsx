@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import ZkappWorkerClient from "@/lib/zkappWorkerClient";
-import { Field, PublicKey } from "o1js";
+import { Field, MerkleTree, PublicKey } from "o1js";
 import { calculateMerkleRoot } from "@/lib/merkleroot";
+import { sign } from "mina-signer/dist/node/mina-signer/src/signature";
 
 const signaturesMock = [
   "226737914325023845218636111057251780156036265551267936159326931770235510744",
@@ -12,7 +13,7 @@ const signaturesMock = [
 ];
 
 const MESSAGE = "Hello";
-const ZKAPP_ADDRESS = "B62qmj5QmokDUQDX4mjU9WMyBBxQFtosBgtV5MsTUwnUMy5AaCrG5QK";
+const ZKAPP_ADDRESS = "B62qrRRD1XbVB22g3YHw7cw5QP6gm8KyEUQ2hr5dAVgmeiKXmS2rgcb";
 
 export default function Home() {
   const [state, setState] = useState({
@@ -124,18 +125,19 @@ export default function Home() {
     // const root = calculateMerkleRoot(signaturesMock.map((item) => Field(item)));
     const root = calculateMerkleRoot([Field(1), Field(2), Field(3)]);
     console.log("root: ", root);
-    await state.zkappWorkerClient!.setRoot(Field(5));
+    await state.zkappWorkerClient!.setRoot(root);
 
     await state.zkappWorkerClient?.provePublishTransaction();
-    const json = await state.zkappWorkerClient?.getTransactionJSON();
 
-    console.log(json);
+    console.log(state.zkappWorkerClient!.getRoot());
 
-    const updateResult = await (window as any).mina?.sendTransaction({
-      transaction: json, // this is zk commond, create by zkApp.
-    });
-
-    console.log(updateResult);
+    // const json = await state.zkappWorkerClient?.getTransactionJSON();
+    //
+    // const updateResult = await (window as any).mina?.sendTransaction({
+    //   transaction: json, // this is zk commond, create by zkApp.
+    // });
+    //
+    // console.log(updateResult);
   }
 
   async function postMessage() {
@@ -149,8 +151,17 @@ export default function Home() {
 
     console.log(signResult);
 
+    const tree = new MerkleTree(signaturesMock.length);
+    tree.fill(signaturesMock.map((item) => Field(item)));
+
+    const pos = signaturesMock.findIndex(signResult.signature.field);
+
+    const witness = tree.getWitness(BigInt(pos))
+    const calculatedRoot = witness.calculateRoot(signResult.signature.field);
+
     const pub = await state.zkappWorkerClient!.publishMessage(
-      signResult.signature.field
+      signResult.signature.field,
+      calculatedRoot
     );
 
     await state.zkappWorkerClient?.provePublishTransaction();
