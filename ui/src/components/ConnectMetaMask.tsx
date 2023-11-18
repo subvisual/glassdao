@@ -1,20 +1,24 @@
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useEnsName } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { Button } from "@ensdomains/thorin";
+import { Button, Card, Profile } from "@ensdomains/thorin";
 import { WalletSVG } from "@ensdomains/thorin";
+import { useEffect } from "react";
 
 export default function ConnectMetaMask() {
   const { connect, isLoading } = useConnect();
   const { disconnect } = useDisconnect();
   const { address, isConnected } = useAccount();
+  const { data: ensName } = useEnsName({ address });
 
   const connector = new MetaMaskConnector();
 
-  if (isConnected) {
+  if (isConnected && address) {
     return (
-      <Button onClick={() => disconnect()} shape="rounded" width="40">
-        {address}
-      </Button>
+      <Profile
+        address={address!}
+        ensName={ensName || address}
+        onClick={() => disconnect()}
+      />
     );
   }
 
