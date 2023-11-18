@@ -1,35 +1,66 @@
-import Link from "next/link";
-import ConnectMetaMask from "@/components/ConnectMetaMask";
-import { Button, Heading } from "@ensdomains/thorin";
 import styled from "styled-components";
+import { useUserRole } from "../hooks/useUserRole";
+import { useAccount } from "wagmi";
+import SelectRole from "../components/SelectRole";
+import { useRouter } from "next/navigation";
+import {
+  Heading,
+  Input,
+  MagnifyingGlassSimpleSVG,
+  Typography,
+} from "@ensdomains/thorin";
+import Flex from "../components/Flex";
 
-const Main = styled.main`
-  padding: 20px 40px;
+const H1 = styled(Heading)`
+  text-wrap: nowrap;
+  background: -webkit-linear-gradient(
+    330.4deg,
+    #44bcf0 4.54%,
+    #7298f8 59.2%,
+    #a099ff 148.85%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding: 0 40px;
 `;
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: fit-content;
-  margin: 40px auto;
+
+const Text = styled(Typography)`
+  text-align: center;
 `;
 
 export default function Home() {
+  const userRole = useUserRole();
+  const { isConnected } = useAccount();
+  const router = useRouter();
+
+  if (userRole) router.push("/" + userRole);
+
+  if (!isConnected)
+    return (
+      <Flex
+        width="min-content"
+        direction="column"
+        margin="100px auto"
+        gap="32px"
+      >
+        <H1>A magnifying glass for DAOs</H1>
+        <Text color="greyPrimary">
+          Search for a DAO to see their contributors and anonymous reviews on
+          what&apos;s really like to be a part of them.
+        </Text>
+        <Input
+          icon={<MagnifyingGlassSimpleSVG />}
+          label="search for DAOs or contributors"
+          placeholder="Search for a DAO or contributor"
+          hideLabel
+        />
+      </Flex>
+    );
+
   return (
-    <Main>
-      <Heading align="center">GlassDAO</Heading>
-      <Wrapper>
-        <ConnectMetaMask />
-        <Button
-          as="a"
-          href="/review"
-          colorStyle="background"
-          shape="rounded"
-          width="45"
-        >
-          Add review
-        </Button>
-      </Wrapper>
-    </Main>
+    <main>
+      <SelectRole />
+    </main>
   );
 }
