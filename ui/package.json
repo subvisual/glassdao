@@ -10,6 +10,7 @@
     "ts-watch": "tsc --noEmit --incremental --watch"
   },
   "dependencies": {
+    "@ensdomains/thorin": "^0.6.44",
     "@types/node": "20.9.1",
     "@types/react": "18.2.37",
     "@types/react-dom": "18.2.15",
@@ -19,6 +20,8 @@
     "o1js": "0.*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-transition-state": "^1.1.5",
+    "styled-components": "^6.1.1",
     "typescript": "5.2.2",
     "wagmi": "^1.4.7"
   }

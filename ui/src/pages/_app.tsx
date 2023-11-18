@@ -4,6 +4,8 @@ import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { goerli, mainnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 import { useIsMounted } from "@/hooks/useIsMounted";
+import { ThorinGlobalStyles, lightTheme } from "@ensdomains/thorin";
+import { ThemeProvider } from "styled-components";
 
 const { publicClient, webSocketPublicClient } = configureChains(
   [mainnet, goerli],
@@ -20,7 +22,10 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <WagmiConfig config={config}>
-      {isMounted && <Component {...pageProps} />}
+      <ThemeProvider theme={lightTheme}>
+        <ThorinGlobalStyles />
+        {isMounted && <Component {...pageProps} />}
+      </ThemeProvider>
     </WagmiConfig>
   );
 }
