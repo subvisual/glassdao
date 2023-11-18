@@ -3,6 +3,7 @@ import type { AppProps } from "next/app";
 import { WagmiConfig, createConfig, configureChains } from "wagmi";
 import { goerli, mainnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
+import { useIsMounted } from "@/hooks/useIsMounted";
 
 const { publicClient, webSocketPublicClient } = configureChains(
   [mainnet, goerli],
@@ -15,9 +16,11 @@ const config = createConfig({
 });
 
 export default function App({ Component, pageProps }: AppProps) {
+  const isMounted = useIsMounted();
+
   return (
     <WagmiConfig config={config}>
-      <Component {...pageProps} />
+      {isMounted && <Component {...pageProps} />}
     </WagmiConfig>
   );
 }
