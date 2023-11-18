@@ -37,5 +37,9 @@
   },
   "peerDependencies": {
     "o1js": "0.14.*"
+  },
+  "dependencies": {
+    "@moralisweb3/common-core": "^2.23.2",
+    "@moralisweb3/evm-api": "^2.23.2"
   }
 }
