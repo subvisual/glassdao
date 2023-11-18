@@ -58,9 +58,5 @@ export default function Home() {
       </Flex>
     );
 
-  return (
-    <main>
-      <SelectRole />
-    </main>
-  );
+  return <SelectRole />;
 }
