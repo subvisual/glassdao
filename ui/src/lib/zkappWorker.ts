@@ -43,9 +43,9 @@ const functions = {
     const currentNum = await state.zkapp!.message.get();
     return JSON.stringify(currentNum.toJSON());
   },
-  publishMessage: async (args: { sig: string }) => {
+  publishMessage: async (args: { message: string; root: string }) => {
     const transaction = await Mina.transaction(() => {
-      state.zkapp!.publishMessage(Field("45646"), Field(args.sig));
+      state.zkapp!.publishMessage(Field(args.message), Field(args.root));
     });
     state.transaction = transaction;
   },

@@ -43,9 +43,10 @@ export default class ZkappWorkerClient {
     return Field.fromJSON(JSON.parse(result as string));
   }
 
-  publishMessage(sig: string) {
+  publishMessage(message: string, root: string) {
     return this._call("publishMessage", {
-      sig,
+      message,
+      root
     });
   }
 

@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import ZkappWorkerClient from "@/lib/zkappWorkerClient";
 import { Field, MerkleTree, PublicKey } from "o1js";
-import { calculateMerkleRoot } from "@/lib/merkleroot";
-import { sign } from "mina-signer/dist/node/mina-signer/src/signature";
+import {
+  calculateMerkleRoot,
+  createTree,
+  getRootFromWitness,
+} from "@/lib/merkleroot";
 
 const signaturesMock = [
   "226737914325023845218636111057251780156036265551267936159326931770235510744",
   "226737914325023845218636111057251780156036265551267936159326931234234510744",
   "123737914325023845218636111057251780156036265551267936159326931770235510744",
-  "16800499555793692526894213099480938382511091338422244196866733508727794867668"
+  "16800499555793692526894213099480938382511091338422244196866733508727794867668",
 ];
 
 const MESSAGE = "Hello";
@@ -104,7 +107,7 @@ export default function Home() {
   useEffect(() => {
     (async () => {
       if (state.hasBeenSetup && !state.accountExists) {
-        for (;;) {
+        for (; ;) {
           setDisplayText("Checking if fee payer account exists...");
           console.log("Checking if fee payer account exists...");
           const res = await state.zkappWorkerClient!.fetchAccount({
@@ -122,22 +125,14 @@ export default function Home() {
   }, [state.hasBeenSetup]);
 
   async function setRootState() {
-    // const root = calculateMerkleRoot(signaturesMock.map((item) => Field(item)));
     const root = calculateMerkleRoot([Field(1), Field(2), Field(3)]);
     console.log("root: ", root);
+
     await state.zkappWorkerClient!.setRoot(root);
 
     await state.zkappWorkerClient?.provePublishTransaction();
 
     console.log(state.zkappWorkerClient!.getRoot());
-
-    // const json = await state.zkappWorkerClient?.getTransactionJSON();
-    //
-    // const updateResult = await (window as any).mina?.sendTransaction({
-    //   transaction: json, // this is zk commond, create by zkApp.
-    // });
-    //
-    // console.log(updateResult);
   }
 
   async function postMessage() {
@@ -151,13 +146,15 @@ export default function Home() {
 
     console.log(signResult);
 
-    const tree = new MerkleTree(signaturesMock.length);
-    tree.fill(signaturesMock.map((item) => Field(item)));
+    const tree = createTree(signaturesMock.map((item) => Field(item)));
 
     const pos = signaturesMock.findIndex(signResult.signature.field);
 
-    const witness = tree.getWitness(BigInt(pos))
-    const calculatedRoot = witness.calculateRoot(signResult.signature.field);
+    const calculatedRoot = getRootFromWitness(
+      tree,
+      BigInt(pos),
+      signResult.signature.field
+    );
 
     const pub = await state.zkappWorkerClient!.publishMessage(
       signResult.signature.field,
