@@ -21,7 +21,7 @@
     "mina-signer": "^2.1.1",
     "moralis": "^2.23.2",
     "next": "14.0.3",
-    "o1js": "0.*",
+    "o1js": "0.14.*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-transition-state": "^1.1.5",
