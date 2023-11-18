@@ -9,6 +9,7 @@ const Wrapper = styled.div`
   gap: ${(props: any) => props.gap || 0};
   margin: ${(props: any) => props.margin || 0};
   padding: ${(props: any) => props.padding || 0};
+  width: ${(props: any) => props.width || "auto"};
 `;
 
 type Props = {
@@ -19,6 +20,7 @@ type Props = {
   gap?: string;
   margin?: string;
   padding?: string;
+  width?: string;
 };
 
 function Flex({ children, ...props }: Props) {

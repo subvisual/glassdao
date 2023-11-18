@@ -22,7 +22,7 @@ const ButtonWrapper = styled.div`
 
 function SelectRole() {
   return (
-    <div>
+    <>
       <Heading align="center">What is your role?</Heading>
       <Flex gap="30px" margin="50px 0">
         <Card>
@@ -60,7 +60,7 @@ function SelectRole() {
           </ButtonWrapper>
         </Card>
       </Flex>
-    </div>
+    </>
   );
 }
 
