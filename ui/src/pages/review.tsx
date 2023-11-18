@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import ZkappWorkerClient from "@/lib/zkappWorkerClient";
 import { Field, MerkleTree, PublicKey } from "o1js";
@@ -7,6 +7,9 @@ import {
   createTree,
   getRootFromWitness,
 } from "@/lib/merkleroot";
+import { stringFromFields } from "o1js/dist/node/bindings/lib/encoding";
+import { getReviews, updateReviews } from "@/lib/reviews";
+import { useZKSetup } from "@/lib/useZkSetup";
 
 const signaturesMock = [
   "226737914325023845218636111057251780156036265551267936159326931770235510744",
@@ -19,107 +22,26 @@ const MESSAGE = "Hello";
 const ZKAPP_ADDRESS = "B62qjyvNLaYNvzVxPAj8yG8q6hYnkK9rmcWLdVAmkpijKnng46GCGbK";
 
 export default function Home() {
-  const [state, setState] = useState({
-    zkappWorkerClient: null as null | ZkappWorkerClient,
-    hasWallet: null as null | boolean,
-    hasBeenSetup: false,
-    accountExists: false,
-    currentNum: null as null | Field,
-    publicKey: null as null | PublicKey,
-    zkappPublicKey: null as null | PublicKey,
-    creatingTransaction: false,
-  });
-
-  const [displayText, setDisplayText] = useState("");
-
-  useEffect(() => {
-    async function timeout(seconds: number): Promise<void> {
-      return new Promise<void>((resolve) => {
-        setTimeout(() => {
-          resolve();
-        }, seconds * 1000);
-      });
-    }
-
-    (async () => {
-      if (!state.hasBeenSetup) {
-        console.log("Loading web worker...");
-        setDisplayText("Loading web worker...");
-
-        const zkappWorkerClient = new ZkappWorkerClient();
-        await timeout(5);
-
-        setDisplayText("Done loading web worker");
-        console.log("Done loading web worker");
-
-        await zkappWorkerClient.setActiveInstanceToBerkeley();
-
-        const mina = (window as any).mina;
-
-        if (mina == null) {
-          setState({ ...state, hasWallet: false });
-          return;
-        }
-
-        const publicKeyBase58: string = (await mina.requestAccounts())[0];
-        const publicKey = PublicKey.fromBase58(publicKeyBase58);
-
-        console.log(`Using key:${publicKey.toBase58()}`);
-        setDisplayText(`Using key:${publicKey.toBase58()}`);
-
-        setDisplayText("Checking if fee payer account exists...");
-        console.log("Checking if fee payer account exists...");
-
-        const res = await zkappWorkerClient.fetchAccount({
-          publicKey: publicKey!,
-        });
-        const accountExists = res.error == null;
-
-        await zkappWorkerClient.loadContract();
-
-        console.log("Compiling zkApp...");
-        setDisplayText("Compiling zkApp...");
-        await zkappWorkerClient.compileContract();
-        console.log("zkApp compiled");
-        setDisplayText("zkApp compiled...");
-
-        const zkappPublicKey = PublicKey.fromBase58(ZKAPP_ADDRESS);
-
-        await zkappWorkerClient.initZkappInstance(zkappPublicKey);
-
-        console.log("Getting zkApp state...");
-        setDisplayText("Getting zkApp state...");
-        await zkappWorkerClient.fetchAccount({ publicKey: zkappPublicKey });
-
-        setState({
-          ...state,
-          zkappWorkerClient,
-          hasWallet: true,
-          hasBeenSetup: true,
-          publicKey,
-          zkappPublicKey,
-          accountExists,
-        });
-      }
-    })();
-  }, []);
+  const state = useZKSetup();
+  const [reviewContent, setReviewContent] = useState<
+    { title: string; body: string }[]
+  >([]);
 
   useEffect(() => {
     (async () => {
-      if (state.hasBeenSetup && !state.accountExists) {
-        for (; ;) {
-          setDisplayText("Checking if fee payer account exists...");
-          console.log("Checking if fee payer account exists...");
-          const res = await state.zkappWorkerClient!.fetchAccount({
-            publicKey: state.publicKey!,
-          });
-          const accountExists = res.error == null;
-          if (accountExists) {
-            break;
-          }
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-        }
-        setState({ ...state, accountExists: true });
+      if (state.hasBeenSetup) {
+        const messageCid = await state.zkappWorkerClient?.getCurrentMessage();
+
+        if (!messageCid) return;
+
+        const str = messageCid.toString();
+        const cid = "QmUWBDtbKdf6vQkfyeERNhhS4xhTZMc5KVy7f11YYtkebL";
+
+        const data = await getReviews(cid);
+
+        console.log(data);
+
+        setReviewContent(data);
       }
     })();
   }, [state.hasBeenSetup]);
@@ -152,7 +74,9 @@ export default function Home() {
 
     console.log(signResult);
 
-    const pos = signaturesMock.findIndex(item => signResult.signature.field.toString() == item);
+    const pos = signaturesMock.findIndex(
+      (item) => signResult.signature.field.toString() == item
+    );
     const tree = createTree(signaturesMock.map((item) => Field(item)));
 
     const calculatedRoot = getRootFromWitness(
@@ -178,6 +102,18 @@ export default function Home() {
     console.log(updateResult);
   }
 
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+    const data = new FormData(event.target as HTMLFormElement);
+
+    const title = data.get("title") as string;
+    const body = data.get("review") as string;
+
+    const newCid = await updateReviews([...reviewContent, { title, body }]);
+
+    console.log(newCid);
+  }
+
   // Create UI elements
 
   let hasWallet;
@@ -196,7 +132,7 @@ export default function Home() {
       className={styles.start}
       style={{ fontWeight: "bold", fontSize: "1.5rem", paddingBottom: "5rem" }}
     >
-      {displayText}
+      {state.statusMessage}
       {hasWallet}
     </div>
   );
@@ -236,6 +172,13 @@ export default function Home() {
         {setup}
         {accountDoesNotExist}
         {mainContent}
+      </div>
+      <div>
+        <form action="" onSubmit={handleSubmit}>
+          <input type="text" name="title" />
+          <textarea name="body" rows={10}></textarea>
+          <button type="submit">Submit</button>
+        </form>
       </div>
     </div>
   );
