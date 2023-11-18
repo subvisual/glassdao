@@ -77,15 +77,15 @@ contract Link {
       return companiesEmployees[company][employee];
     }
 
-    function confirm(uint company_id, string calldata mina_addr) external {
+    function confirm(uint company_id, string calldata mina_address) external {
       address company = companyIdToAddress[company_id];
 
       EmployeeRecord memory e = companiesEmployees[company][msg.sender];
-      e.mina_addr = mina_addr;
+      e.mina_addr = mina_address;
       e.state = EmployeeState.APPROVED;
 
       companiesEmployees[company][msg.sender] = e;
 
-      EmployeeConfirmed(company_id, msg.sender, mina_address);
+      emit EmployeeConfirmed(company_id, msg.sender, mina_address);
     }
 }

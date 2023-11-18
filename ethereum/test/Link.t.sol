@@ -15,18 +15,27 @@ contract LinkTest is Test {
     }
 
     function test_createCompany() public {
+        vm.startPrank(address(alice));
+        vm.expectEmit();
+
+        emit Link.CompanyCreated(1, "A", address(alice));
+
         uint company_id = link.createCompany("A");
         assertEq(link.getCompanyName(company_id), "A");
     }
 
     function test_addEmployee() public {
+        vm.startPrank(address(alice));
+
         uint company_id = link.createCompany("A");
-        assertEq(link.getCompanyName(company_id), "A");
 
-        link.addEmployee(company_id, address(alice));
+        vm.expectEmit();
+        emit Link.EmployeeAdded(1, address(bob));
 
-        Link.EmployeeRecord memory expected = Link.EmployeeRecord(address(alice), "0", Link.EmployeeState.PENDING);
-        Link.EmployeeRecord memory e = link.getEmployee(company_id, address(alice));
+        link.addEmployee(company_id, address(bob));
+
+        Link.EmployeeRecord memory expected = Link.EmployeeRecord(address(bob), "0", Link.EmployeeState.PENDING);
+        Link.EmployeeRecord memory e = link.getEmployee(company_id, address(bob));
 
         bytes memory expectedBytes = abi.encode(expected);
         bytes memory eBytes = abi.encode(e);
@@ -35,10 +44,17 @@ contract LinkTest is Test {
     }
 
     function test_confirm() public {
+        vm.startPrank(address(alice));
+
         uint company_id = link.createCompany("A");
         link.addEmployee(company_id, address(bob));
 
+        vm.stopPrank();
         vm.startPrank(address(bob));
+        vm.expectEmit();
+
+        emit Link.EmployeeConfirmed(1, address(bob), "1");
+
         link.confirm(company_id, "1");
         vm.stopPrank();
 
