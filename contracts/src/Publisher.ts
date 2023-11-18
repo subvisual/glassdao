@@ -19,6 +19,7 @@ export class Publisher extends SmartContract {
   // On-chain state definitions
   @state(Field) message = State<Field>();
   @state(PublicKey) oraclePublicKey = State<PublicKey>();
+  @state(Field) root = State<Field>();
 
   @method init() {
     super.init();
@@ -26,6 +27,7 @@ export class Publisher extends SmartContract {
     // Define initial values of on-chain state
     this.oraclePublicKey.set(PublicKey.fromJSON(oraclePubKey));
     this.message.set(Field(0));
+    this.root.set(Field(0));
   }
 
   @method publishMessage(message: Field, sig: Field) {
@@ -36,6 +38,7 @@ export class Publisher extends SmartContract {
     // Get data from oracle
     const addresses = [
       '226737914325023845218636111057251780156036265551267936159326931770235510744',
+      '16800499555793692526894213099480938382511091338422244196866733508727794867668'
     ];
     const list = addresses.map((addr) => Field(addr));
 
@@ -48,5 +51,9 @@ export class Publisher extends SmartContract {
 
     // Update on-chain message state
     this.message.set(message);
+  }
+
+  @method setRoot(newRoot: Field) {
+    this.root.set(newRoot);
   }
 }

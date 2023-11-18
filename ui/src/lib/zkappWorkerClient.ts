@@ -49,6 +49,12 @@ export default class ZkappWorkerClient {
     });
   }
 
+  setRoot(root: Field) {
+    return this._call("setRoot", {
+      root,
+    });
+  }
+
   provePublishTransaction() {
     return this._call("provePublishTransaction", {});
   }

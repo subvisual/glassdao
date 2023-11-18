@@ -49,6 +49,12 @@ const functions = {
     });
     state.transaction = transaction;
   },
+  setRoot: async (args: { root: Field }) => {
+    const transaction = await Mina.transaction(() => {
+      state.zkapp!.setRoot(args.root);
+    });
+    state.transaction = transaction;
+  },
   provePublishTransaction: async (args: {}) => {
     await state.transaction!.prove();
   },

@@ -2,9 +2,17 @@ import { useEffect, useState } from "react";
 import styles from "../styles/Home.module.css";
 import ZkappWorkerClient from "@/lib/zkappWorkerClient";
 import { Field, PublicKey } from "o1js";
+import { calculateMerkleRoot } from "@/lib/merkleroot";
+
+const signaturesMock = [
+  "226737914325023845218636111057251780156036265551267936159326931770235510744",
+  "226737914325023845218636111057251780156036265551267936159326931234234510744",
+  "123737914325023845218636111057251780156036265551267936159326931770235510744",
+  "16800499555793692526894213099480938382511091338422244196866733508727794867668"
+];
 
 const MESSAGE = "Hello";
-const ZKAPP_ADDRESS = "B62qkVvqNfUgVMyyHXXUZkWR4s49bv2c9XPHm4oWNopXLLMcU9ZvsAZ";
+const ZKAPP_ADDRESS = "B62qmj5QmokDUQDX4mjU9WMyBBxQFtosBgtV5MsTUwnUMy5AaCrG5QK";
 
 export default function Home() {
   const [state, setState] = useState({
@@ -112,6 +120,24 @@ export default function Home() {
     })();
   }, [state.hasBeenSetup]);
 
+  async function setRootState() {
+    // const root = calculateMerkleRoot(signaturesMock.map((item) => Field(item)));
+    const root = calculateMerkleRoot([Field(1), Field(2), Field(3)]);
+    console.log("root: ", root);
+    await state.zkappWorkerClient!.setRoot(Field(5));
+
+    await state.zkappWorkerClient?.provePublishTransaction();
+    const json = await state.zkappWorkerClient?.getTransactionJSON();
+
+    console.log(json);
+
+    const updateResult = await (window as any).mina?.sendTransaction({
+      transaction: json, // this is zk commond, create by zkApp.
+    });
+
+    console.log(updateResult);
+  }
+
   async function postMessage() {
     console.log("Publish");
 
@@ -181,6 +207,9 @@ export default function Home() {
     mainContent = (
       <div style={{ justifyContent: "center", alignItems: "center" }}>
         <p>Done!</p>
+        <button type="button" onClick={setRootState}>
+          setRootState
+        </button>
         <button type="button" onClick={postMessage}>
           postMessage
         </button>
