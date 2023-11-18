@@ -15,6 +15,7 @@
     "@types/react-dom": "18.2.15",
     "eslint": "8.54.0",
     "eslint-config-next": "14.0.3",
+    "mina-signer": "^2.1.1",
     "next": "14.0.3",
     "o1js": "0.*",
     "react": "18.2.0",

@@ -21,6 +21,7 @@ await deployTxn.sign([deployerKey, zkAppPrivateKey]).send();
 
 console.log(`Deployed to: ${zkAppAddress.toJSON()}`);
 
+
 /* 
 const Bob2 = Local.testAccounts[1];
 const txn2 = await Mina.transaction(Bob2.publicKey, () => {

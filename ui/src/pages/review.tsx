@@ -3,7 +3,7 @@ import styles from "../styles/Home.module.css";
 import ZkappWorkerClient from "@/lib/zkappWorkerClient";
 import { Field, PublicKey } from "o1js";
 
-const MESSAGE = "Hello2";
+const MESSAGE = "Hello";
 const ZKAPP_ADDRESS = "B62qkVvqNfUgVMyyHXXUZkWR4s49bv2c9XPHm4oWNopXLLMcU9ZvsAZ";
 
 export default function Home() {
