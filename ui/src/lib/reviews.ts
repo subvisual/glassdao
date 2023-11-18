@@ -15,14 +15,20 @@ export async function updateReviews(content: Record<string, any>[]) {
 
   const data = await req.json();
 
-  const newCid = data?.[0].path;
+  const newCid = data?.[0].path.replace(
+    "https://ipfs.moralis.io:2053/ipfs/",
+    ""
+  );
+  const result = newCid.replace("/content.json", "");
 
-  return newCid;
+  // "https://ipfs.moralis.io:2053/ipfs/QmVhDVxTnyghxTzGt3qfHTCPLdoGycNKWiePPYa5UUCqUp/content.json"
+
+  return result;
 }
 
 export async function getReviews(cid: string) {
   const req = await fetch(`http://localhost:3000/api/ipfs?cid=${cid}`);
   const data = await req.json();
 
-  return data;
+  return JSON.parse(data);
 }

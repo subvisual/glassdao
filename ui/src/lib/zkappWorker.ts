@@ -5,6 +5,7 @@ type Transaction = Awaited<ReturnType<typeof Mina.transaction>>;
 // ---------------------------------------------------------------------------------------
 
 import type { Publisher } from "../../../contracts/src/Publisher";
+import { stringFromFields } from "./transform";
 
 const state = {
   Publisher: null as null | typeof Publisher,
@@ -40,12 +41,19 @@ const functions = {
     state.zkapp = new state.Publisher!(publicKey);
   },
   getCurrentMessage: async (args: {}) => {
-    const currentNum = await state.zkapp!.message.get();
-    return JSON.stringify(currentNum.toJSON());
+    const msg = await state.zkapp!.message.get();
+    const msgEnd = await state.zkapp!.messageEnd.get();
+    console.log({msg, msgEnd})
+    const str = stringFromFields([msg, msgEnd]);
+    return str;
   },
-  publishMessage: async (args: { message: string; root: string }) => {
+  publishMessage: async (args: { message: string[]; root: string }) => {
     const transaction = await Mina.transaction(() => {
-      state.zkapp!.publishMessage(Field(args.message), Field(args.root));
+      state.zkapp!.publishMessage(
+        Field(args.message[0]),
+        Field(args.message[1]),
+        Field(args.root)
+      );
     });
     state.transaction = transaction;
   },

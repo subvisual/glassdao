@@ -38,15 +38,15 @@ export default class ZkappWorkerClient {
     });
   }
 
-  async getCurrentMessage(): Promise<Field> {
+  async getCurrentMessage(): Promise<string> {
     const result = await this._call("getCurrentMessage", {});
-    return Field.fromJSON(JSON.parse(result as string));
+    return result as string;
   }
 
-  publishMessage(message: string, root: string) {
+  publishMessage(message: string[], root: string) {
     return this._call("publishMessage", {
       message,
-      root
+      root,
     });
   }
 

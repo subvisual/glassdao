@@ -10,6 +10,7 @@ import {
 import { stringFromFields } from "o1js/dist/node/bindings/lib/encoding";
 import { getReviews, updateReviews } from "@/lib/reviews";
 import { useZKSetup } from "@/lib/useZkSetup";
+import { stringToFields } from "@/lib/transform";
 
 const signaturesMock = [
   "226737914325023845218636111057251780156036265551267936159326931770235510744",
@@ -24,26 +25,30 @@ const ZKAPP_ADDRESS = "B62qjyvNLaYNvzVxPAj8yG8q6hYnkK9rmcWLdVAmkpijKnng46GCGbK";
 export default function Home() {
   const state = useZKSetup();
   const [reviewContent, setReviewContent] = useState<
-    { title: string; body: string }[]
+    { position: string; body: string; rating: string }[]
   >([]);
 
+  async function getReviewsFromContractState() {
+    const messageCid = await state.zkappWorkerClient?.getCurrentMessage();
+
+    console.log(messageCid);
+
+    if (!messageCid) return;
+
+    const str = messageCid.toString();
+    //const cid = "QmUWBDtbKdf6vQkfyeERNhhS4xhTZMc5KVy7f11YYtkebL";
+
+    const data = await getReviews(messageCid);
+
+    console.log(data);
+
+    setReviewContent(data);
+  }
+
   useEffect(() => {
-    (async () => {
-      if (state.hasBeenSetup) {
-        const messageCid = await state.zkappWorkerClient?.getCurrentMessage();
-
-        if (!messageCid) return;
-
-        const str = messageCid.toString();
-        const cid = "QmUWBDtbKdf6vQkfyeERNhhS4xhTZMc5KVy7f11YYtkebL";
-
-        const data = await getReviews(cid);
-
-        console.log(data);
-
-        setReviewContent(data);
-      }
-    })();
+    if (state.hasBeenSetup) {
+      getReviewsFromContractState();
+    }
   }, [state.hasBeenSetup]);
 
   async function setRootState() {
@@ -63,7 +68,7 @@ export default function Home() {
     console.log(updateResult);
   }
 
-  async function postMessage() {
+  async function postMessage(newMessageCid: string[]) {
     console.log("Publish");
 
     const signResult = await (window as any).mina
@@ -86,7 +91,7 @@ export default function Home() {
     );
 
     const pub = await state.zkappWorkerClient!.publishMessage(
-      signResult.signature.field,
+      newMessageCid,
       calculatedRoot
     );
 
@@ -106,12 +111,24 @@ export default function Home() {
     event.preventDefault();
     const data = new FormData(event.target as HTMLFormElement);
 
-    const title = data.get("title") as string;
-    const body = data.get("review") as string;
+    const position = data.get("position") as string;
+    const rating = data.get("rating") as string;
+    const body = data.get("body") as string;
 
-    const newCid = await updateReviews([...reviewContent, { title, body }]);
+    const newCid = await updateReviews([
+      ...reviewContent,
+      { position, rating, body },
+    ]);
+    const newCidAsFields = stringToFields(newCid).map((item) =>
+      item.toString()
+    );
 
-    console.log(newCid);
+    console.log({
+      newCid,
+      newCidAsFields,
+    });
+
+    postMessage(newCidAsFields);
   }
 
   // Create UI elements
@@ -159,9 +176,7 @@ export default function Home() {
         <button type="button" onClick={setRootState}>
           setRootState
         </button>
-        <button type="button" onClick={postMessage}>
-          postMessage
-        </button>
+        <button type="button">postMessage</button>
       </div>
     );
   }
@@ -175,7 +190,8 @@ export default function Home() {
       </div>
       <div>
         <form action="" onSubmit={handleSubmit}>
-          <input type="text" name="title" />
+          <input type="text" name="position" />
+          <input type="text" name="rating" />
           <textarea name="body" rows={10}></textarea>
           <button type="submit">Submit</button>
         </form>
