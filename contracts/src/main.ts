@@ -19,10 +19,10 @@ const deployTxn = await Mina.transaction(deployerAccount, () => {
 await deployTxn.prove();
 await deployTxn.sign([deployerKey, zkAppPrivateKey]).send();
 
+console.log(`Deployed to: ${zkAppAddress.toJSON()}`);
+
+/* 
 const Bob2 = Local.testAccounts[1];
-
-console.log(`attempt message: ${Bob2.publicKey.toJSON()}`);
-
 const txn2 = await Mina.transaction(Bob2.publicKey, () => {
   zkAppInstance.publishMessage(Field('45646'), Bob2.privateKey);
 });
@@ -30,3 +30,4 @@ await txn2.prove();
 await txn2.sign([Bob2.privateKey]).send();
 
 console.log(`message: ${zkAppInstance.message.get()}`);
+ */
