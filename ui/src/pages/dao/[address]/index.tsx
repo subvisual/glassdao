@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import IdCard from "../../components/IdCard";
-import { Card, Typography, Tag } from "@ensdomains/thorin";
-import Flex from "../../components/Flex";
+import IdCard from "../../../components/IdCard";
+import { Card, Typography, Tag, Button } from "@ensdomains/thorin";
+import Flex from "../../../components/Flex";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
 
 const Wrapper = styled.div`
   width: 70%;
@@ -16,8 +17,11 @@ const Wrapper = styled.div`
 
 function DAO() {
   const router = useRouter();
-  const { address } = router.query;
+  const { address } = useAccount();
+  const { address: daoAddress } = router.query;
   const [data, setData] = useState<Record<string, string>>({});
+
+  const isOwner = address === daoAddress;
 
   //fetchData.then(res => setData(res.data))
 
@@ -31,6 +35,15 @@ function DAO() {
         </Flex>
         <Typography>{data.bio}</Typography>
       </Card>
+      {isOwner && (
+        <Button
+          as="a"
+          href={`${daoAddress}/add-contributor
+        `}
+        >
+          Add contributors
+        </Button>
+      )}
     </Wrapper>
   );
 }
