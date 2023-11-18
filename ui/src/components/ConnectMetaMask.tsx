@@ -1,7 +1,7 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { Button } from "@ensdomains/thorin";
-import { Spinner } from "@ensdomains/thorin";
+import { WalletSVG } from "@ensdomains/thorin";
 
 export default function ConnectMetaMask() {
   const { connect, isLoading } = useConnect();
@@ -22,11 +22,13 @@ export default function ConnectMetaMask() {
     connector && (
       <Button
         disabled={!connector.ready}
+        loading={isLoading}
         onClick={() => connect({ connector })}
         shape="rounded"
         width="45"
+        prefix={<WalletSVG />}
       >
-        {isLoading ? <Spinner /> : "Connect"}
+        Connect
       </Button>
     )
   );

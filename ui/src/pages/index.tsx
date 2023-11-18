@@ -6,6 +6,7 @@ import styled from "styled-components";
 const Main = styled.main`
   padding: 20px 40px;
 `;
+
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
