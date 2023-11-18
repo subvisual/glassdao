@@ -54,6 +54,7 @@ export class Publisher extends SmartContract {
   }
 
   @method setRoot(newRoot: Field) {
+    this.root.getAndAssertEquals();
     this.root.set(newRoot);
   }
 }
