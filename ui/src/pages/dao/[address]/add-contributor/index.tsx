@@ -48,7 +48,7 @@ export default function AddContributor() {
 
   return (
     <FormWrapper>
-      <Form onSubmit={submit}>
+      <Form>
         <Heading>Add Contributor</Heading>
         <Input
           id="address"
