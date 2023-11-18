@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import styled from "styled-components";
+import { useUserRole } from "@/hooks/useUserRole";
 
 const Layout = styled.main`
   display: flex;
@@ -9,6 +10,8 @@ const Layout = styled.main`
 `;
 
 function AppLayout({ children }: { children: ReactNode }) {
+  useUserRole();
+
   return <Layout>{children}</Layout>;
 }
 

@@ -1,36 +1,31 @@
-import Link from "next/link";
-import ConnectMetaMask from "@/components/ConnectMetaMask";
-import { Button, Heading } from "@ensdomains/thorin";
 import styled from "styled-components";
-
-const Main = styled.main`
-  padding: 20px 40px;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  width: fit-content;
-  margin: 40px auto;
-`;
+import { useUserRole } from "../hooks/useUserRole";
+import { useAccount } from "wagmi";
+import SelectRole from "../components/SelectRole";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const userRole = useUserRole();
+  const { isConnected } = useAccount();
+  const router = useRouter();
+
+  if (!isConnected) return null;
+
+  if (userRole) router.push("/" + userRole);
+
   return (
-    <Main>
-      <Heading align="center">GlassDAO</Heading>
-      <Wrapper>
-        <ConnectMetaMask />
-        <Button
-          as="a"
-          href="/review"
-          colorStyle="background"
-          shape="rounded"
-          width="45"
-        >
-          Add review
-        </Button>
-      </Wrapper>
-    </Main>
+    <main>
+      <SelectRole />
+
+      {/* <Button
+        as="a"
+        href="/review"
+        colorStyle="background"
+        shape="rounded"
+        width="45"
+      >
+        Add review
+      </Button> */}
+    </main>
   );
 }
