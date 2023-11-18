@@ -16,7 +16,7 @@ const signaturesMock = [
 ];
 
 const MESSAGE = "Hello";
-const ZKAPP_ADDRESS = "B62qrRRD1XbVB22g3YHw7cw5QP6gm8KyEUQ2hr5dAVgmeiKXmS2rgcb";
+const ZKAPP_ADDRESS = "B62qjyvNLaYNvzVxPAj8yG8q6hYnkK9rmcWLdVAmkpijKnng46GCGbK";
 
 export default function Home() {
   const [state, setState] = useState({
@@ -125,14 +125,20 @@ export default function Home() {
   }, [state.hasBeenSetup]);
 
   async function setRootState() {
-    const root = calculateMerkleRoot([Field(1), Field(2), Field(3)]);
+    const root = calculateMerkleRoot(signaturesMock.map((item) => Field(item)));
     console.log("root: ", root);
 
     await state.zkappWorkerClient!.setRoot(root);
 
     await state.zkappWorkerClient?.provePublishTransaction();
 
-    console.log(state.zkappWorkerClient!.getRoot());
+    console.log(await state.zkappWorkerClient!.getRoot());
+    const json = await state.zkappWorkerClient?.getTransactionJSON();
+    const updateResult = await (window as any).mina?.sendTransaction({
+      transaction: json,
+    });
+
+    console.log(updateResult);
   }
 
   async function postMessage() {
@@ -146,14 +152,13 @@ export default function Home() {
 
     console.log(signResult);
 
+    const pos = signaturesMock.findIndex(item => signResult.signature.field.toString() == item);
     const tree = createTree(signaturesMock.map((item) => Field(item)));
-
-    const pos = signaturesMock.findIndex(signResult.signature.field);
 
     const calculatedRoot = getRootFromWitness(
       tree,
       BigInt(pos),
-      signResult.signature.field
+      Field(signResult.signature.field)
     );
 
     const pub = await state.zkappWorkerClient!.publishMessage(
