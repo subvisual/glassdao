@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "ts-watch": "tsc --noEmit --incremental --watch",
-    "deploy": "cd ../contracts && yarn run build && cd ../ui && next build"
+    "deploy": "cd ../contracts && yarn install && yarn run build && cd ../ui && yarn install && next build"
   },
   "dependencies": {
     "@ensdomains/thorin": "^0.6.44",
