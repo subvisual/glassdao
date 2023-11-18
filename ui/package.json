@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ts-watch": "tsc --noEmit --incremental --watch",
-    "deploy": "cd ../contracts/ && npm run build && cd ../ui/ && next build"
+    "ts-watch": "tsc --noEmit --incremental --watch"
   },
   "dependencies": {
     "@ensdomains/thorin": "^0.6.44",

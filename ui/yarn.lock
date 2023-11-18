@@ -3956,7 +3956,7 @@ number-to-bn@1.7.0:
     bn.js "4.11.6"
     strip-hex-prefix "1.0.0"
 
-o1js@0.*:
+o1js@0.14.*:
   version "0.14.1"
   resolved "https://registry.yarnpkg.com/o1js/-/o1js-0.14.1.tgz#492bf8e8614539246a085a88e99702719545eb77"
   integrity sha512-ro01Ez5kUqREGoQpvvmsWhIEZAy4lt1PHNn90rIaBCTzi41mlfynw6WDRVhkw5PAW8J9YeC9iLTaddbCNAzX5g==
