@@ -33,6 +33,10 @@ contract Link {
     event EmployeeAdded(uint company_id, address employee);
     event EmployeeConfirmed(uint company_id, address employee, string mina_address);
 
+    constructor(uint256 _companyId) {
+        companyId = _companyId;
+    }
+
     function createCompany(string memory name) external returns (uint _companyId) {
         companyId++;
 
