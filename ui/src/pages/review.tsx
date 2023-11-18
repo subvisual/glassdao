@@ -3,6 +3,9 @@ import styles from "../styles/Home.module.css";
 import ZkappWorkerClient from "@/lib/zkappWorkerClient";
 import { Field, PublicKey } from "o1js";
 
+const MESSAGE = "Hello2";
+const ZKAPP_ADDRESS = "B62qkVvqNfUgVMyyHXXUZkWR4s49bv2c9XPHm4oWNopXLLMcU9ZvsAZ";
+
 export default function Home() {
   const [state, setState] = useState({
     zkappWorkerClient: null as null | ZkappWorkerClient,
@@ -68,9 +71,6 @@ export default function Home() {
         console.log("zkApp compiled");
         setDisplayText("zkApp compiled...");
 
-        const ZKAPP_ADDRESS =
-          "B62qoFRWWD5QutXqfCDhEKt9bXGCrDMwiV1AGTDs13SC7Y7Tp14W81k";
-
         const zkappPublicKey = PublicKey.fromBase58(ZKAPP_ADDRESS);
 
         await zkappWorkerClient.initZkappInstance(zkappPublicKey);
@@ -111,6 +111,33 @@ export default function Home() {
       }
     })();
   }, [state.hasBeenSetup]);
+
+  async function postMessage() {
+    console.log("Publish");
+
+    const signResult = await (window as any).mina
+      ?.signMessage({
+        message: MESSAGE,
+      })
+      .catch((err: any) => err);
+
+    console.log(signResult);
+
+    const pub = await state.zkappWorkerClient!.publishMessage(
+      signResult.signature.field
+    );
+
+    await state.zkappWorkerClient?.provePublishTransaction();
+    const json = await state.zkappWorkerClient?.getTransactionJSON();
+
+    console.log(json);
+
+    const updateResult = await (window as any).mina?.sendTransaction({
+      transaction: json, // this is zk commond, create by zkApp.
+    });
+
+    console.log(updateResult);
+  }
 
   // Create UI elements
 
@@ -154,6 +181,9 @@ export default function Home() {
     mainContent = (
       <div style={{ justifyContent: "center", alignItems: "center" }}>
         <p>Done!</p>
+        <button type="button" onClick={postMessage}>
+          postMessage
+        </button>
       </div>
     );
   }

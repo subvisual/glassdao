@@ -43,12 +43,14 @@ export default class ZkappWorkerClient {
     return Field.fromJSON(JSON.parse(result as string));
   }
 
-  createUpdateTransaction() {
-    return this._call("createUpdateTransaction", {});
+  publishMessage(sig: string) {
+    return this._call("publishMessage", {
+      sig,
+    });
   }
 
-  proveUpdateTransaction() {
-    return this._call("proveUpdateTransaction", {});
+  provePublishTransaction() {
+    return this._call("provePublishTransaction", {});
   }
 
   async getTransactionJSON() {

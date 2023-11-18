@@ -28,22 +28,20 @@ export class Publisher extends SmartContract {
     this.message.set(Field(0));
   }
 
-  @method publishMessage(message: Field, signerPrivateKey: PrivateKey) {
-    const signerPublicKey = signerPrivateKey.toPublicKey();
-
+  @method publishMessage(message: Field, sig: Field) {
     // Get the oracle public key from the contract state
-    const oraclePublicKey = this.oraclePublicKey.get();
-    this.oraclePublicKey.assertEquals(oraclePublicKey);
+    /* const oraclePublicKey = this.oraclePublicKey.get();
+    this.oraclePublicKey.assertEquals(oraclePublicKey); */
 
     // Get data from oracle
     const addresses = [
-      'B62qqqi4cbLkt5J14fshCSZpFz2fmS4fK8cuFmBuNvxR8pxFzmiwmM1',
+      '226737914325023845218636111057251780156036265551267936159326931770235510744',
     ];
-    const list = addresses.map((addr) => PublicKey.fromJSON(addr));
+    const list = addresses.map((addr) => Field(addr));
 
     // Assert that signer in list
     const isAllowed = list.reduce(
-      (memo, value) => memo.or(value.equals(signerPublicKey)),
+      (memo, value) => memo.or(value.equals(sig)),
       Bool(false)
     );
     isAllowed.assertTrue();

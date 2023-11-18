@@ -1,4 +1,13 @@
 {
   "version": 1,
-  "deployAliases": {}
+  "deployAliases": {
+    "glassdaov1": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/glassdaov1.json",
+      "feepayerKeyPath": "/Users/davelange/.cache/zkapp-cli/keys/depl1.json",
+      "feepayerAlias": "depl1",
+      "fee": "0.1",
+      "smartContract": "Publisher"
+    }
+  }
 }
