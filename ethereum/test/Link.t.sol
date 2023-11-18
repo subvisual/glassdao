@@ -34,7 +34,7 @@ contract LinkTest is Test {
 
         link.addEmployee(company_id, address(bob));
 
-        Link.EmployeeRecord memory expected = Link.EmployeeRecord(address(bob), "0", Link.EmployeeState.PENDING);
+        Link.EmployeeRecord memory expected = Link.EmployeeRecord(address(bob), "no signature", Link.EmployeeState.PENDING);
         Link.EmployeeRecord memory e = link.getEmployee(company_id, address(bob));
 
         bytes memory expectedBytes = abi.encode(expected);
@@ -53,12 +53,12 @@ contract LinkTest is Test {
         vm.startPrank(address(bob));
         vm.expectEmit();
 
-        emit Link.EmployeeConfirmed(1, address(bob), "1");
+        emit Link.EmployeeConfirmed(1, address(bob), "mina signature");
 
-        link.confirm(company_id, "1");
+        link.confirm(company_id, "mina signature");
         vm.stopPrank();
 
-        Link.EmployeeRecord memory expected = Link.EmployeeRecord(address(bob), "1", Link.EmployeeState.APPROVED);
+        Link.EmployeeRecord memory expected = Link.EmployeeRecord(address(bob), "mina signature", Link.EmployeeState.APPROVED);
         bytes memory expectedBytes = abi.encode(expected);
 
         Link.EmployeeRecord memory e = link.getEmployee(company_id, address(bob));

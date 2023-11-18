@@ -10,7 +10,7 @@ contract Link {
 
     struct EmployeeRecord {
         address eth_addr;
-        string mina_addr;
+        string mina_signature;
         EmployeeState state;
     }
 
@@ -31,7 +31,7 @@ contract Link {
 
     event CompanyCreated(uint company_id, string name, address owner);
     event EmployeeAdded(uint company_id, address employee);
-    event EmployeeConfirmed(uint company_id, address employee, string mina_address);
+    event EmployeeConfirmed(uint company_id, address employee, string mina_signature);
 
     constructor(uint256 _companyId) {
         companyId = _companyId;
@@ -47,7 +47,7 @@ contract Link {
 
         EmployeeRecord memory e = EmployeeRecord({
           eth_addr: msg.sender,
-          mina_addr: "0",
+          mina_signature: "no signature",
           state: EmployeeState.APPROVED
         });
 
@@ -65,7 +65,7 @@ contract Link {
     function addEmployee(uint company_id, address employee) public {
       EmployeeRecord memory e = EmployeeRecord({
         eth_addr: employee,
-        mina_addr: "0",
+        mina_signature: "no signature",
         state: EmployeeState.PENDING
       });
 
@@ -81,15 +81,15 @@ contract Link {
       return companiesEmployees[company][employee];
     }
 
-    function confirm(uint company_id, string calldata mina_address) external {
+    function confirm(uint company_id, string calldata mina_signature) external {
       address company = companyIdToAddress[company_id];
 
       EmployeeRecord memory e = companiesEmployees[company][msg.sender];
-      e.mina_addr = mina_address;
+      e.mina_signature = mina_signature;
       e.state = EmployeeState.APPROVED;
 
       companiesEmployees[company][msg.sender] = e;
 
-      emit EmployeeConfirmed(company_id, msg.sender, mina_address);
+      emit EmployeeConfirmed(company_id, msg.sender, mina_signature);
     }
 }
