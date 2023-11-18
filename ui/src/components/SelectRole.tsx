@@ -37,7 +37,7 @@ function SelectRole() {
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </Typography>
           <ButtonWrapper>
-            <Button as="a" href="/dao">
+            <Button as="a" href="/dao/setup">
               I&apos;m representing a DAO
             </Button>
           </ButtonWrapper>
@@ -54,7 +54,7 @@ function SelectRole() {
             eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </Typography>
           <ButtonWrapper>
-            <Button as="a" href="/contributor">
+            <Button as="a" href="/contributor/setup">
               I&apos;m a contributor
             </Button>
           </ButtonWrapper>
