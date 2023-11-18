@@ -29,6 +29,10 @@ contract Link {
     // company id => CompanyDetails
     mapping (uint => CompanyDetails) companies;
 
+    event CompanyCreated(uint company_id, string name, address owner);
+    event EmployeeAdded(uint company_id, address employee);
+    event EmployeeConfirmed(uint company_id, address employee, string mina_address);
+
     function createCompany(string memory name) external returns (uint _companyId) {
         companyId++;
 
@@ -44,6 +48,8 @@ contract Link {
         });
 
         companiesEmployees[msg.sender][msg.sender] = e ;
+
+        emit CompanyCreated(companyId, name, msg.sender);
 
         return companyId;
     }
@@ -61,6 +67,8 @@ contract Link {
 
       address company = companyIdToAddress[company_id];
       companiesEmployees[company][employee] = e;
+
+      emit EmployeeAdded(companyId, employee);
     }
 
     function getEmployee(uint company_id, address employee) public view returns (EmployeeRecord memory e) {
@@ -77,5 +85,7 @@ contract Link {
       e.state = EmployeeState.APPROVED;
 
       companiesEmployees[company][msg.sender] = e;
+
+      EmployeeConfirmed(company_id, msg.sender, mina_address);
     }
 }
