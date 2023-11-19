@@ -8,7 +8,7 @@ Moralis.start({
 });
 
 export async function updateReviews(content: Record<string, any>[]) {
-  const req = await fetch(`http://localhost:3000/api/ipfs`, {
+  const req = await fetch(`api/ipfs`, {
     method: "post",
     body: JSON.stringify(content),
   });
@@ -27,7 +27,7 @@ export async function updateReviews(content: Record<string, any>[]) {
 }
 
 export async function getReviews(cid: string) {
-  const req = await fetch(`http://localhost:3000/api/ipfs?cid=${cid}`);
+  const req = await fetch(`api/ipfs?cid=${cid}`);
   const data = await req.json();
 
   return JSON.parse(data);
