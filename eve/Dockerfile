@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/loca
 # Runtime image
 FROM debian:bullseye-slim
 
-RUN apt install libssl-dev
+RUN apt update && apt install libssl-dev
 
 # Run as "app" user
 RUN useradd -ms /bin/bash app
