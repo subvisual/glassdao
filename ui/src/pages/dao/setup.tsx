@@ -4,9 +4,10 @@ import {
   useContractEvent,
   useContractWrite,
   usePrepareContractWrite,
+  useWaitForTransaction,
 } from "wagmi";
 import { Card, Input, Textarea, Button, Heading } from "@ensdomains/thorin";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { address as linkAddress } from "../../lib/abis/contracts/link/address";
 import linkAbi from "../../lib/abis/contracts/link/abi.json";
@@ -32,35 +33,47 @@ export default function DAOSetup() {
   const router = useRouter();
   const { address } = useAccount();
   const [formData, setFormData] = useState<Record<string, string>>({});
+  const [companyId, setCompanyId] = useState<string>();
 
   const { config } = usePrepareContractWrite({
     address: linkAddress,
     abi: linkAbi,
     functionName: "createCompany",
     args: [formData.name],
+    enabled: !!formData.name,
   });
 
-  const { write } = useContractWrite(config);
+  const { write, data } = useContractWrite(config);
 
-  useContractEvent({
+  const { isLoading } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  const unwatch = useContractEvent({
     address: linkAddress,
     abi: linkAbi,
     eventName: "CompanyCreated",
     listener(log: any) {
-      const companyId = parseInt(log[0].args.company_id);
-
-      if (companyId) {
-        localStorage.setItem(
-          address as string,
-          JSON.stringify({
-            ...formData,
-            companyId: companyId.toString(),
-          })
-        );
-        router.push("/dao/" + address);
+      if (log[0].args.company_id) {
+        setCompanyId(parseInt(log[0].args.company_id).toString());
+        unwatch?.();
       }
     },
   });
+
+  useEffect(() => {
+    if (!companyId) return;
+
+    localStorage.setItem(
+      address as string,
+      JSON.stringify({
+        ...formData,
+        companyId: companyId.toString(),
+      })
+    );
+
+    router.push("/dao/" + address);
+  }, [companyId]);
 
   const submit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -112,7 +125,7 @@ export default function DAOSetup() {
             setFormData((prev) => ({ ...prev, bio: ev.target.value }))
           }
         />
-        <ContinueButton disabled={!address} type="submit">
+        <ContinueButton loading={isLoading} disabled={!address} type="submit">
           Continue
         </ContinueButton>
       </Form>
