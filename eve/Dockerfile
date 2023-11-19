@@ -19,17 +19,11 @@ FROM debian:bookworm-slim
 #RUN useradd -ms /bin/bash app
 RUN apt-get update && apt-get install -y libssl-dev
 
-WORKDIR /usr/lib/x86_64-linux-gnu
-RUN ln -s libssl.so.3 libssl.so
-RUN ldconfig
 #USER app
 WORKDIR /app
 
 # Get compiled binaries from builder's cargo install directory
 COPY --from=builder /usr/src/app/eve /app/eve
-
-RUN ldconfig
-
 
 # Run the app
 CMD ./eve
