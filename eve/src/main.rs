@@ -35,9 +35,18 @@ async fn main() -> Result<()> {
     let event_listener = tokio::spawn({
         let local = local.clone();
         async move {
-            listen::start(0, local, shutdown_recv, insert_send, post_send)
-                .await
-                .unwrap();
+            listen::start(
+                std::env::var("BLOCK_NUMBER")
+                    .expect("Couldn't get block number")
+                    .parse()
+                    .expect("Couldn't parse block number"),
+                local,
+                shutdown_recv,
+                insert_send,
+                post_send,
+            )
+            .await
+            .unwrap();
         }
     });
 
