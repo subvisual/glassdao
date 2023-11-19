@@ -27,8 +27,9 @@ pub async fn start(
     insert_send: broadcast::Sender<Record>,
     post_send: broadcast::Sender<Record>,
 ) -> Result<()> {
-    let anvil = Anvil::new().port(8546 as u16).spawn();
+    let anvil;
     let contract = if local {
+        anvil = Anvil::new().port(8546 as u16).spawn();
         let wallet: LocalWallet = anvil.keys()[0].clone().into();
 
         let provider_http =
