@@ -43,6 +43,7 @@ export default function Home() {
         direction="column"
         margin="100px auto"
         gap="32px"
+        style={{ flex: "1 0 auto" }}
       >
         <H1>A magnifying glass for DAOs</H1>
         <Text color="greyPrimary">

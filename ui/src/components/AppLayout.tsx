@@ -7,6 +7,7 @@ const Layout = styled.main`
   flex-direction: column;
   gap: 20px;
   padding: 20px 30px;
+  height: 100%;
 `;
 
 function AppLayout({ children }: { children: ReactNode }) {
