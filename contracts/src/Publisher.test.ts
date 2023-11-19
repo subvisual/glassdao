@@ -1,6 +1,3 @@
-/* 
-Comment out to fix failing build
-
 import { Publisher } from './Publisher';
 import { beforeAll, beforeEach, it, describe, expect } from '@jest/globals';
 import {
@@ -142,4 +139,3 @@ describe('Add', () => {
     expect(zkApp.messageEnd.get()).toEqual(msgEnd);
   });
 });
- */
