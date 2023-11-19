@@ -1,16 +1,8 @@
 use axum::error_handling::HandleErrorLayer;
 use axum::extract::Path;
 use axum::BoxError;
-use axum::{
-    async_trait,
-    extract::{FromRef, FromRequestParts, State},
-    http::{request::Parts, StatusCode},
-    response::IntoResponse,
-    routing::get,
-    Json, Router,
-};
+use axum::{extract::State, http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use ethers::types::Address;
-use ethers::types::H160;
 use eve::db;
 use eve::listen;
 use eve::post;
@@ -21,10 +13,9 @@ use std::sync::{Arc, Mutex};
 use std::time::Duration;
 use tokio::signal;
 use tokio::sync::broadcast;
-use tokio::time::error;
 use tower_http::trace::TraceLayer;
 
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use tower::ServiceBuilder;
 
 #[tokio::main]
@@ -74,6 +65,7 @@ async fn main() -> Result<()> {
         .route("/employee", get(employee_index))
         .route("/company/:id", get(company_get))
         .route("/company/:id/employee/:address", get(employee_get))
+        .route("/", get(|| async { "ok" }))
         .layer(
             ServiceBuilder::new()
                 .layer(HandleErrorLayer::new(|error: BoxError| async move {
@@ -93,7 +85,7 @@ async fn main() -> Result<()> {
         .with_state(db.clone());
 
     println!("listening on {}", addr);
-    tokio::join!(
+    let _ = tokio::join!(
         post_thread,
         event_listener,
         db_thread,
@@ -217,13 +209,4 @@ async fn shutdown_signal(shutdown_send: Vec<broadcast::Sender<()>>) {
     });
 
     println!("signal received, starting graceful shutdown");
-}
-
-/// Utility function for mapping any error into a `500 Internal Server Error`
-/// response.
-fn internal_error<E>(err: E) -> (StatusCode, String)
-where
-    E: std::error::Error,
-{
-    (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
 }

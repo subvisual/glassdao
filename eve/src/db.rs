@@ -1,5 +1,4 @@
-use std::sync::Arc;
-use std::{collections::HashMap, sync::RwLock};
+use std::collections::HashMap;
 
 use ethers::core::types::{H160, U256};
 use serde::Serialize;
