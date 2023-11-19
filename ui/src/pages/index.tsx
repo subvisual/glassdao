@@ -4,12 +4,18 @@ import { useAccount } from "wagmi";
 import SelectRole from "../components/SelectRole";
 import { useRouter } from "next/navigation";
 import {
+  Button,
   Heading,
   Input,
   MagnifyingGlassSimpleSVG,
   Typography,
 } from "@ensdomains/thorin";
 import Flex from "../components/Flex";
+
+import { NotificationItem, chainNameType } from "@pushprotocol/uiweb";
+import { PushAPI, CONSTANTS } from "@pushprotocol/restapi";
+import { ethers } from "ethers";
+import { useEffect, useRef, useState } from "react";
 
 const H1 = styled(Heading)`
   text-wrap: nowrap;
