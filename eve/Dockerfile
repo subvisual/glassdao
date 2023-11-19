@@ -1,7 +1,11 @@
-FROM rust:latest as builder
+FROM rust:bookworm as builder
 
 WORKDIR /usr/src/app
 COPY . .
+
+RUN ln -s libssl.so.3 libssl.so
+RUN ldconfig
+
 # Will build and cache the binary and dependent crates in release mode
 RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/local/cargo \
     --mount=type=cache,target=target \
@@ -9,8 +13,6 @@ RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/loca
 
 # Runtime image
 FROM debian:bookworm-slim
-
-RUN apt update && apt install libssl-dev
 
 # Run as "app" user
 RUN useradd -ms /bin/bash app
