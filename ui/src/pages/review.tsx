@@ -20,7 +20,6 @@ const signaturesMock = [
 ];
 
 const MESSAGE = "Hello";
-const ZKAPP_ADDRESS = "B62qjyvNLaYNvzVxPAj8yG8q6hYnkK9rmcWLdVAmkpijKnng46GCGbK";
 
 export default function Home() {
   const state = useZKSetup();
@@ -79,20 +78,16 @@ export default function Home() {
 
     console.log(signResult);
 
-    const pos = signaturesMock.findIndex(
-      (item) => signResult.signature.field.toString() == item
+    const req = await fetch(
+      `api/oracle?signature=${signResult.signature.field}`
     );
-    const tree = createTree(signaturesMock.map((item) => Field(item)));
+    const oracleData = await req.json();
 
-    const calculatedRoot = getRootFromWitness(
-      tree,
-      BigInt(pos),
-      Field(signResult.signature.field)
-    );
 
     const pub = await state.zkappWorkerClient!.publishMessage(
       newMessageCid,
-      calculatedRoot
+      oracleData.data,
+      oracleData.signature
     );
 
     await state.zkappWorkerClient?.provePublishTransaction();

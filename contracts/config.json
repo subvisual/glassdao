@@ -16,6 +16,14 @@
       "feepayerAlias": "depl3",
       "fee": "0.1",
       "smartContract": "Publisher"
+    },
+    "glassdao_v4": {
+      "url": "https://proxy.berkeley.minaexplorer.com/graphql",
+      "keyPath": "keys/glassdao_v4.json",
+      "feepayerKeyPath": "/Users/davelange/.cache/zkapp-cli/keys/depl4.json",
+      "feepayerAlias": "depl4",
+      "fee": "0.1",
+      "smartContract": "Publisher"
     }
   }
 }

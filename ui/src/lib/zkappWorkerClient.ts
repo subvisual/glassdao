@@ -1,4 +1,4 @@
-import { fetchAccount, PublicKey, Field } from "o1js";
+import { fetchAccount, PublicKey, Field, Signature } from "o1js";
 
 import type {
   ZkappWorkerRequest,
@@ -43,10 +43,11 @@ export default class ZkappWorkerClient {
     return result as string;
   }
 
-  publishMessage(message: string[], root: string) {
+  publishMessage(message: string[], root: string, oracleSignature: string) {
     return this._call("publishMessage", {
       message,
       root,
+      oracleSignature,
     });
   }
 

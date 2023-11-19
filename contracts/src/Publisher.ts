@@ -6,11 +6,12 @@ import {
   method,
   PublicKey,
   Encoding,
+  Signature,
 } from 'o1js';
 
 export { Field, Encoding };
 
-const oraclePubKey = 'B62qqqi4cbLkt5J14fshCSZpFz2fmS4fK8cuFmBuNvxR8pxFzmiwmM1';
+const oraclePubKey = 'B62qngFvCtF7K2PVunsmwpne5VhiADeh6XzqZqHzMEp5THGTGc8x6mZ';
 
 export class Publisher extends SmartContract {
   // On-chain state definitions
@@ -32,12 +33,22 @@ export class Publisher extends SmartContract {
   @method publishMessage(
     message: Field,
     messageEnd: Field,
-    calculatedRoot: Field
+    calculatedRoot: Field,
+    oracleSignature: Signature
   ) {
     this.root.getAndAssertEquals();
     this.message.getAndAssertEquals();
+    this.oraclePublicKey.getAndAssertEquals();
 
+    // Check oracle signature
+    const validSignature = oracleSignature.verify(this.oraclePublicKey.get(), [
+      calculatedRoot,
+    ]);
+    validSignature.assertTrue();
+
+    // Check merkle root
     this.root.assertEquals(calculatedRoot);
+
     this.message.set(message);
     this.messageEnd.set(messageEnd);
   }

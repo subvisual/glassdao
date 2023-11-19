@@ -3,7 +3,7 @@ import { Field, MerkleTree, PublicKey } from "o1js";
 import { useState, useEffect } from "react";
 
 export const ZKAPP_ADDRESS =
-  "B62qpR43LijsSdNA32oKM4d9QijZkXCRmKzPBJnTTjkwDp3ofNu5uqG";
+  "B62qk7VN64ygeCtKDFavBYrofiiRnAR5KbWE6hVY1348k4DzVwcwr6f";
 
 export function useZKSetup() {
   const [state, setState] = useState({

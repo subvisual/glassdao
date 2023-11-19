@@ -1,12 +1,14 @@
 // @ts-ignore
+import { createTree, getRootFromWitness } from "@/lib/merkleroot";
 import Client from "mina-signer";
+import { Field } from "o1js";
 const client = new Client({ network: "testnet" });
 
 export const signaturesMock = [
   "226737914325023845218636111057251780156036265551267936159326931770235510744",
   "226737914325023845218636111057251780156036265551267936159326931234234510744",
   "123737914325023845218636111057251780156036265551267936159326931770235510744",
-  "16800499555793692526894213099480938382511091338422244196866733508727794867668"
+  "16800499555793692526894213099480938382511091338422244196866733508727794867668",
 ];
 
 export const ORACLE_KEYS = {
@@ -20,14 +22,20 @@ export const ORACLE_KEYS = {
 };
 
 export default function handler(req: any, res: any) {
-  const asBigInts = signaturesMock.map((item) => BigInt(item));
+  const userSig = req.query.signature;
 
-  console.log(asBigInts);
+  const pos = signaturesMock.findIndex((item) => userSig == item);
+  const tree = createTree(signaturesMock.map((item) => Field(item)));
 
-  const signature = client.signFields(asBigInts, ORACLE_KEYS.privateKey);
+  const calculatedRoot = getRootFromWitness(tree, BigInt(pos), Field(userSig));
+
+  const signature = client.signFields(
+    [BigInt(calculatedRoot)],
+    ORACLE_KEYS.privateKey
+  );
 
   res.status(200).json({
-    data: signaturesMock,
+    data: calculatedRoot,
     signature: signature.signature,
     publicKey: signature.publicKey,
   });
