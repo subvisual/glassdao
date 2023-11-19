@@ -11,8 +11,6 @@ use ethers::{
 use eyre::Result;
 use std::{convert::TryFrom, sync::Arc, time::Duration};
 
-const WSS_URL: &str = "wss://ethereum-sepolia.publicnode.com";
-
 use ethers::{
     core::types::{Address, U256},
     providers::{Http, Provider, Ws},
@@ -20,9 +18,7 @@ use ethers::{
 
 use tokio::sync::broadcast;
 
-const LINK_ADDRESS: &str = "0x5FC6dc0C8e0e66b53A19286da6e5F92156454e17";
-
-abigen!(Link, "../ethereum/out/Link.sol/Link.json",);
+abigen!(Link, "abi/Link.json",);
 
 pub async fn start(
     contract_creation_block: u64,
@@ -49,9 +45,9 @@ pub async fn start(
         let client = Arc::new(provider);
         Link::new(deploy_contract.address(), client)
     } else {
-        let provider = Provider::<Ws>::connect(WSS_URL).await?;
+        let provider = Provider::<Ws>::connect(std::env::var("WSS_URL")?).await?;
         let client = Arc::new(provider);
-        let address: Address = LINK_ADDRESS.parse()?;
+        let address: Address = std::env::var("LINK_ADDRESS")?.parse()?;
         Link::new(address, client)
     };
 

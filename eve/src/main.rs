@@ -30,7 +30,7 @@ async fn main() -> Result<()> {
     let (insert_send, insert_recv) = broadcast::channel(1);
     let (post_send, post_recv) = broadcast::channel(1);
 
-    let local = true;
+    let local = std::env::var("LOCAL").is_ok();
 
     let event_listener = tokio::spawn({
         let local = local.clone();
