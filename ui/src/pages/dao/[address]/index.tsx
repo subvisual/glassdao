@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import IdCard from "@/components/IdCard";
-import { Card, Typography, Tag, Button } from "@ensdomains/thorin";
+import { Card, Typography, Tag, Button, Profile } from "@ensdomains/thorin";
 import Flex from "@/components/Flex";
 import styled from "styled-components";
 import { useAccount, useContractRead } from "wagmi";
@@ -23,11 +23,15 @@ function DAO() {
   const { address: daoAddress } = router.query;
   const [data, setData] = useState<Record<string, string>>({});
 
-  const isOwner = address === daoAddress;
-
   const localData = JSON.parse(
     localStorage.getItem(daoAddress as string) || "{}"
   );
+
+  const [contributors, setContributors] = useState<Record<string, string>[]>(
+    localData.contributors || []
+  );
+
+  const isOwner = address === daoAddress;
 
   const { data: companyData } = useContractRead({
     address: linkAddress,
@@ -51,6 +55,13 @@ function DAO() {
         </Flex>
         <Typography>{data?.bio}</Typography>
       </Card>
+      {contributors.length > 0 && (
+        <Card>
+          {contributors.map((contributor, idx) => (
+            <Profile key={idx} address={contributor.address} />
+          ))}
+        </Card>
+      )}
       {isOwner && (
         <Button
           as="a"
