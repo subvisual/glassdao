@@ -94,6 +94,7 @@ export default function PostReview({
 
   async function postMessage(newMessageCid: string[]) {
     console.log("Publish");
+    setLoading(true);
 
     const signResult = await (window as any).mina
       ?.signMessage({
@@ -169,10 +170,10 @@ export default function PostReview({
           gap: "24px",
         }}
       >
-        <ContinueButton colorStyle="accentSecondary" loading={loading}>
+        <ContinueButton colorStyle="accentSecondary">Cancel</ContinueButton>
+        <ContinueButton type="submit" loading={loading}>
           Review
         </ContinueButton>
-        <ContinueButton type="submit">Review</ContinueButton>
       </div>
     </Form>
   );
