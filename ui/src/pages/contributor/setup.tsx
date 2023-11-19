@@ -1,5 +1,10 @@
 import styled from "styled-components";
-import { useAccount } from "wagmi";
+import {
+  useAccount,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import { redirect } from "next/navigation";
 import { useUserRole } from "../../hooks/useUserRole";
 import {
@@ -14,13 +19,19 @@ import {
   Typography,
 } from "@ensdomains/thorin";
 import Flex from "../../components/Flex";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import IdCard from "../../components/IdCard";
 import { useEnsName, useEnsAvatar } from "wagmi";
 import { useRouter } from "next/router";
 import { CheckCircleSVG } from "@ensdomains/thorin";
+import { address as linkAddress } from "../../lib/abis/contracts/link/address";
+import linkAbi from "../../lib/abis/contracts/link/abi.json";
 
 const STEPS = 3;
+
+const COMPANY_ADDR = "0xAf4f3BDe74e49dDF63Dee2a5Df05687e67553D3f";
+
+const MESSAGE = "Hello";
 
 const FormWrapper = styled(Card)`
   width: 70%;
@@ -63,10 +74,22 @@ const initialFormData: FormData = {
 export default function ContributorSetup() {
   const [step, setStep] = useState<number>(1);
   const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [minaAddr, setMinaAddr] = useState<string>();
-  const [status, setStatus] = useState<{ loading: boolean; success: boolean }>({
-    loading: false,
-    success: false,
+  const [minaSignature, setMinaSignature] = useState<string>();
+
+  const localData = JSON.parse(localStorage.getItem(COMPANY_ADDR) || "{}");
+
+  const { config } = usePrepareContractWrite({
+    address: linkAddress,
+    abi: linkAbi,
+    functionName: "confirm",
+    args: [localData.companyId, minaSignature],
+    enabled: localData.companyId && minaSignature,
+  });
+
+  const { data, write } = useContractWrite(config);
+
+  const { isLoading, isSuccess } = useWaitForTransaction({
+    hash: data?.hash,
   });
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, STEPS));
@@ -75,17 +98,15 @@ export default function ContributorSetup() {
     setFormData(data);
     nextStep();
   };
-  const submit = async (data: string) => {
-    setStatus((prev) => ({ ...prev, loading: true }));
+
+  const submit = async (signature: string) => {
+    setMinaSignature(signature);
     nextStep();
-    //do something with formData and minaAddr
-    await new Promise((res) =>
-      setTimeout(() => {
-        res("yay");
-      }, 1000)
-    );
-    setStatus((prev) => ({ success: true, loading: false }));
   };
+
+  useEffect(() => {
+    minaSignature && write?.();
+  }, [minaSignature, write]);
 
   switch (step) {
     case 1:
@@ -93,7 +114,12 @@ export default function ContributorSetup() {
     case 2:
       return <Step2 submit={submit} />;
     case 3:
-      return <Step3 formData={formData} status={status} />;
+      return (
+        <Step3
+          formData={formData}
+          status={{ loading: isLoading, success: isSuccess }}
+        />
+      );
     default:
       return null;
   }
@@ -160,12 +186,14 @@ const Step1 = ({
 };
 
 const Step2 = ({ submit }: { submit: (data: string) => void }) => {
-  // const { address: ethAddress } = useAccount();
+  const minaConnect = async () => {
+    const signResult = await (window as any).mina
+      ?.signMessage({
+        message: MESSAGE,
+      })
+      .catch((err: any) => err);
 
-  const minaConnect = () => {
-    //connect
-    //get address ??
-    submit("fake-address");
+    submit(signResult.signature.field.toString());
   };
   return (
     <FormWrapper>
