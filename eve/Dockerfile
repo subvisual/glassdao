@@ -3,9 +3,6 @@ FROM rust:bookworm as builder
 WORKDIR /usr/src/app
 COPY . .
 
-WORKDIR /usr/lib/x86_64-linux-gnu
-RUN ln -s libssl.so.3 libssl.so
-RUN ldconfig
 
 WORKDIR /usr/src/app
 COPY . .
@@ -19,13 +16,19 @@ RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/loca
 FROM debian:bookworm-slim
 
 # Run as "app" user
-RUN useradd -ms /bin/bash app
+#RUN useradd -ms /bin/bash app
+RUN apt-get update && apt-get install -y libssl-dev
 
-USER app
+WORKDIR /usr/lib/x86_64-linux-gnu
+RUN ln -s libssl.so.3 libssl.so
+RUN ldconfig
+#USER app
 WORKDIR /app
 
 # Get compiled binaries from builder's cargo install directory
 COPY --from=builder /usr/src/app/eve /app/eve
+
+RUN ldconfig
 
 
 # Run the app

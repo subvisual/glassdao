@@ -8,11 +8,9 @@ edition = "2021"
 [dependencies]
 ethers = {version = "2.0", features = ["ws"]}
 tokio = { version = "1.34.0", features = ["full"] }
-juniper = "0.15.11"
 axum = "0.6.20"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "any", "postgres"] }
 hyper = { version = "0.14", features = ["full"] }
 #foundry = {git = "https://github.com/foundry-rs/foundry", branch = "main"}
 eyre = "0.6.9"
