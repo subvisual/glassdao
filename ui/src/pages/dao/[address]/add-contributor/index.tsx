@@ -1,5 +1,11 @@
 import styled from "styled-components";
-import { useAccount } from "wagmi";
+import {
+  useAccount,
+  useContractEvent,
+  useContractWrite,
+  usePrepareContractWrite,
+  useWaitForTransaction,
+} from "wagmi";
 import {
   Card,
   Input,
@@ -8,8 +14,10 @@ import {
   Button,
   Heading,
 } from "@ensdomains/thorin";
-import { FormEvent } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { address as linkAddress } from "@/lib/abis/contracts/link/address";
+import linkAbi from "@/lib/abis/contracts/link/abi.json";
 
 const FormWrapper = styled(Card)`
   width: 70%;
@@ -32,23 +40,47 @@ export default function AddContributor() {
   const router = useRouter();
   const { address } = useAccount();
   const { address: daoAddress } = router.query;
+  const [formData, setFormData] = useState<Record<string, string>>({});
+
+  const localData = JSON.parse(
+    localStorage.getItem(daoAddress as string) || "{}"
+  );
+  const { config } = usePrepareContractWrite({
+    address: linkAddress,
+    abi: linkAbi,
+    functionName: "addEmployee",
+    args: [localData.companyId, formData.address],
+    enabled: localData.companyId && formData.address,
+  });
+
+  const { data, write } = useContractWrite(config);
+
+  const { data: txData } = useWaitForTransaction({
+    hash: data?.hash,
+  });
+
+  useEffect(() => {
+    if (!txData) return;
+
+    localStorage.setItem(
+      daoAddress as string,
+      JSON.stringify({
+        ...localData,
+        contributors: [...(localData.contributors || []), formData],
+      })
+    );
+
+    router.push("/dao/" + address);
+  }, [txData]);
 
   const submit = (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
-
-    const data = new FormData(ev.currentTarget);
-    const address = data.get("address")?.toString() || "";
-    const startDate = data.get("startDate")?.toString() || "";
-    const endDate = data.get("endDate")?.toString() || "";
-    const role = data.get("role")?.toString() || "";
-
-    // addContributor({ name, startDate, endDate, role });
-    daoAddress && router.push("/dao/" + daoAddress);
+    write?.();
   };
 
   return (
     <FormWrapper>
-      <Form>
+      <Form onSubmit={submit}>
         <Heading>Add Contributor</Heading>
         <Input
           id="address"
@@ -56,6 +88,9 @@ export default function AddContributor() {
           required
           label="Contributor Address"
           placeholder="Address"
+          onChange={(ev) =>
+            setFormData((prev) => ({ ...prev, address: ev.target.value }))
+          }
         />
         <Input
           id="startDate"
@@ -63,12 +98,18 @@ export default function AddContributor() {
           required
           label="Start Date"
           placeholder="Start Date"
+          onChange={(ev) =>
+            setFormData((prev) => ({ ...prev, startDate: ev.target.value }))
+          }
         />
         <Input
           id="endDate"
           name="endDate"
           label="End Date"
           placeholder="End Date"
+          onChange={(ev) =>
+            setFormData((prev) => ({ ...prev, endDate: ev.target.value }))
+          }
         />
         <Textarea
           id="role"
@@ -76,8 +117,13 @@ export default function AddContributor() {
           name="role"
           placeholder="Role"
           label="role"
+          onChange={(ev) =>
+            setFormData((prev) => ({ ...prev, role: ev.target.value }))
+          }
         />
-        <ContinueButton type="submit">Continue</ContinueButton>
+        <ContinueButton disabled={!address} type="submit">
+          Continue
+        </ContinueButton>
       </Form>
     </FormWrapper>
   );
