@@ -1,10 +1,12 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
-import IdCard from "../../../components/IdCard";
-import { Card, Typography, Tag, Button } from "@ensdomains/thorin";
-import Flex from "../../../components/Flex";
+import { useEffect, useState } from "react";
+import IdCard from "@/components/IdCard";
+import { Card, Typography, Tag, Button, Profile } from "@ensdomains/thorin";
+import Flex from "@/components/Flex";
 import styled from "styled-components";
-import { useAccount } from "wagmi";
+import { useAccount, useContractRead } from "wagmi";
+import { address as linkAddress } from "@/lib/abis/contracts/link/address";
+import linkAbi from "@/lib/abis/contracts/link/abi.json";
 
 const Wrapper = styled.div`
   width: 70%;
@@ -21,20 +23,45 @@ function DAO() {
   const { address: daoAddress } = router.query;
   const [data, setData] = useState<Record<string, string>>({});
 
+  const localData = JSON.parse(
+    localStorage.getItem(daoAddress as string) || "{}"
+  );
+
+  const [contributors, setContributors] = useState<Record<string, string>[]>(
+    localData.contributors || []
+  );
+
   const isOwner = address === daoAddress;
 
-  //fetchData.then(res => setData(res.data))
+  const { data: companyData } = useContractRead({
+    address: linkAddress,
+    abi: linkAbi,
+    functionName: "getCompanyName",
+    args: [localData.companyId],
+    enabled: !!localData.companyId,
+  });
+
+  useEffect(() => {
+    setData({ ...localData, name: companyData as string });
+  }, [companyData]);
 
   return (
     <Wrapper>
-      <IdCard avatar={data.avatar} name={data.name} ensName={data.ensName} />
+      <IdCard avatar={data?.avatar} name={data?.name} ensName={data?.ensName} />
       <Card>
         <Typography>About</Typography>
         <Flex justifyContent="start">
-          <Tag>{data.sector}</Tag>
+          <Tag>{data?.sector}</Tag>
         </Flex>
-        <Typography>{data.bio}</Typography>
+        <Typography>{data?.bio}</Typography>
       </Card>
+      {contributors.length > 0 && (
+        <Card>
+          {contributors.map((contributor, idx) => (
+            <Profile key={idx} address={contributor.address} />
+          ))}
+        </Card>
+      )}
       {isOwner && (
         <Button
           as="a"

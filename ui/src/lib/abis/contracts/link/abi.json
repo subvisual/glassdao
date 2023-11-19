@@ -1,0 +1,145 @@
+[
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_companyId", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "company_id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "CompanyCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "company_id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "employee",
+        "type": "address"
+      }
+    ],
+    "name": "EmployeeAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "company_id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "employee",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "mina_signature",
+        "type": "string"
+      }
+    ],
+    "name": "EmployeeConfirmed",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "company_id", "type": "uint256" },
+      { "internalType": "address", "name": "employee", "type": "address" }
+    ],
+    "name": "addEmployee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "company_id", "type": "uint256" },
+      { "internalType": "string", "name": "mina_signature", "type": "string" }
+    ],
+    "name": "confirm",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "string", "name": "name", "type": "string" }],
+    "name": "createCompany",
+    "outputs": [
+      { "internalType": "uint256", "name": "_companyId", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "company_id", "type": "uint256" }
+    ],
+    "name": "getCompanyName",
+    "outputs": [{ "internalType": "string", "name": "name", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "company_id", "type": "uint256" },
+      { "internalType": "address", "name": "employee", "type": "address" }
+    ],
+    "name": "getEmployee",
+    "outputs": [
+      {
+        "components": [
+          { "internalType": "address", "name": "eth_addr", "type": "address" },
+          {
+            "internalType": "string",
+            "name": "mina_signature",
+            "type": "string"
+          },
+          {
+            "internalType": "enum Link.EmployeeState",
+            "name": "state",
+            "type": "uint8"
+          }
+        ],
+        "internalType": "struct Link.EmployeeRecord",
+        "name": "e",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
