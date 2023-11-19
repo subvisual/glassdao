@@ -73,6 +73,7 @@ function Header() {
         return (
           <Toast
             id={idx.toString()}
+            key={idx.toString()}
             title={title}
             variant="desktop"
             open={showNotifications}
