@@ -3,8 +3,12 @@ FROM rust:bookworm as builder
 WORKDIR /usr/src/app
 COPY . .
 
+WORKDIR /usr/lib/x86_64-linux-gnu
 RUN ln -s libssl.so.3 libssl.so
 RUN ldconfig
+
+WORKDIR /usr/src/app
+COPY . .
 
 # Will build and cache the binary and dependent crates in release mode
 RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/local/cargo \
@@ -23,8 +27,6 @@ WORKDIR /app
 # Get compiled binaries from builder's cargo install directory
 COPY --from=builder /usr/src/app/eve /app/eve
 
-RUN ln -s libssl.so.3 libssl.so
-RUN ldconfig
 
 # Run the app
 CMD ./eve
