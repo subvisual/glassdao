@@ -18,13 +18,12 @@ For those considering joining a DAO, GlassDAO is extremely valuable as it allows
 
 For DAOs, GlassDAO can also be very helpful, as it allows them to prevent outsiders from posing as contributors and let current members assess the experience of being part of the group, ensuring transparency and motivating like-minded people to join.
 
-## How it's Made
-This project was made using:
+**Deployed frontend**: https://glassdao.vercel.app/
 
-Foundry for the Ethereum smart contract development;
-IPFS to store the information;
-Mina Protocol Zero Knowledge to allow contributors to review the DAOs without the risk of their identity being exposed;
-ENS for the names and avatars & Thorin Design System and React component library;
-Push Protocol for the in-app notifications;
-Typescript, WAGMI, Next.js & Vercel Serverless functions;
-Rust & ethers-rs.
+**Ethereum Contract on Sepolia**: 0x5FC6dc0C8e0e66b53A19286da6e5F92156454e17
+
+**Mina Contract on Berkeley**: B62qk7VN64ygeCtKDFavBYrofiiRnAR5KbWE6hVY1348k4DzVwcwr6f
+
+**Custom EVE indexer**: https://eve.fly.dev
+
+**Push protocol channel**: GlassDAO
