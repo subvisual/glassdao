@@ -37,7 +37,9 @@ function Header() {
     "0xD8634C39BBFd4033c0d3289C4515275102423681"
   );
   const fetchNotifications = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum as any);
+    const provider = new ethers.providers.Web3Provider(
+      (window as any).ethereum
+    );
     await provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
     const userAlice = await PushAPI.initialize(signer, {
@@ -68,8 +70,7 @@ function Header() {
         <ConnectMetaMask />
       </NotificationsConnect>
       {notifications.map((notifItemSingular, idx) => {
-        const { title, message } =
-          notifItemSingular;
+        const { title, message } = notifItemSingular;
         return (
           <Toast
             id={idx.toString()}
