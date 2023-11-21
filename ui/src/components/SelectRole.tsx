@@ -33,8 +33,8 @@ function SelectRole() {
             <Typography asProp="h2">DAO</Typography>
           </CardTitle>
           <Typography weight="light">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            As a DAO, you can prevent outsiders from posing as contributors and
+            let members review their experience.
           </Typography>
           <ButtonWrapper>
             <Button as="a" href="/dao/setup">
@@ -50,8 +50,8 @@ function SelectRole() {
             <Typography asProp="h2">Contributor</Typography>
           </CardTitle>
           <Typography weight="light">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            As a contributor, you can easily prove which DAOs you have been
+            contributing to and anonymously review them. I’m a contributor
           </Typography>
           <ButtonWrapper>
             <Button as="a" href="/contributor/setup">
